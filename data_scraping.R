@@ -20,22 +20,50 @@ for (i in 1:len) {
   print(i) # showing progress
 }
 
-doshisha_num = 133
-kyo_uni_num = 109
-
 
 vec <- Reduce(c,apartment_url_list)
-vec
+apartment_urls = data.frame(paste0("https://unilife.co.jp", vec))
 
-data.frame(paste0("https://unilife.co.jp", vec))
+df_list = list()
 
-num = 0
-for (i in 1:7){
-  len = length(apartment_url_list[[i]])
-  num = num + len
-  print(num)
+for (i in c(1:nrow(apartment_urls))) {
+  print(i)
+  url = apartment_urls[i,]
+  page = read_html(as.character(url))
+  title = page %>% 
+    html_nodes("h1.title") %>% 
+    html_text() %>% 
+    str_remove_all("\t")
+  
+  main_table = page %>% 
+    html_nodes("table.tbl02")
+  
+  price_info = page %>% 
+    html_nodes("div.twoColBlock") %>% 
+    html_text() %>% 
+    str_remove_all("\t") %>% 
+    str_remove("※複数の間取りがある場合は数字をクリックして下さい。\n\n\n\n\n\n\n\n\n\n") %>% 
+    str_remove("\n\n\n\n\n\n\n賃料情報\n")
+  
+  details = main_table %>% 
+    html_nodes("tbody") %>% 
+    html_text() %>% 
+    magrittr::extract2(2) %>% 
+    str_remove_all("\t")
+  
+  points = page %>% 
+    html_nodes("ol.pointList") %>% 
+    html_text() %>% 
+    str_remove_all("\t")
+  
+  price_info2 = main_table %>% 
+    html_nodes("tbody") %>% 
+    html_text() %>% 
+    magrittr::extract2(1) %>% 
+    str_remove_all("\t")
+  
+  df_list[[i]] = data.frame(title, details, points, price_info, price_info2)
 }
 
-# 104 apartments
-
-
+main_df = do.call(rbind, df_list)
+# write.csv(main_df, "Kyoto_rent.csv")

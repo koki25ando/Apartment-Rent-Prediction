@@ -15,5 +15,17 @@
 + [Uni Life 京大](https://unilife.co.jp/city/kyoto-map/area4/)Not So Bad
 + [エリッツ 京大](https://www.elitz.co.jp/campus/kyoto/)BAD
 + [エリッツ 同志社](https://www.elitz.co.jp/campus/doshisha/)BAD
-
 + [今出川付近](https://unilife.co.jp/search/range/lat:35.03017044/lon:135.76075745/dis:1.5)
+
+Data
+
++ 家賃
++ 最寄駅
++ 間取り・面積
++ 築年数
++ 階数
++ 敷金
++ 礼金
+
+
+できるだけたくさんデータ取ろう
