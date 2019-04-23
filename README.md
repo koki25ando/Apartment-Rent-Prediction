@@ -15,3 +15,7 @@ Data Components
 + date
 + maintainance
 + deposits
+
+
+分析参考文献
++ [ggplot2で文字化けを防ぐ方法](https://qiita.com/rmecab/items/fd1a08a1f1300839dbce)

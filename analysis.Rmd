@@ -15,7 +15,7 @@ rent = read.csv("data/cleaned_rent.csv")
 ## Data Cleansing
 
 ```{r}
-rent$
+
 ```
 
 
