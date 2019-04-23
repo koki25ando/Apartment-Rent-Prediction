@@ -208,7 +208,7 @@ names(rent)[19] = "renewal"
 
 
 # View(rent)
-# write.csv(rent, "cleaned_rent.csv", row.names = FALSE)
+# write.csv(rent, "data/cleaned_rent.csv", row.names = FALSE)
 
 
 

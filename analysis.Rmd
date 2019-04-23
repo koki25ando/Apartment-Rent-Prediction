@@ -1,0 +1,46 @@
+---
+title: "Analysis"
+author: "Koki Ando"
+date: "4/23/2019"
+output: html_document
+---
+
+# Preparation
+
+```{r}
+library(tidyverse)
+rent = read.csv("data/cleaned_rent.csv")
+```
+
+## Data Cleansing
+
+```{r}
+rent$
+```
+
+
+# EDA
+
+```{r}
+str(rent)
+```
+
+## Station
+
+```{r fig.width = 11, fig.height = 7}
+rent %>% 
+  ggplot(aes(station, fill = station)) +
+  geom_bar(show.legend = FALSE) +
+  theme_gray(base_family = "HiraKakuPro-W3") +
+  coord_flip()
+```
+
+## Distance
+
+```{r}
+rent %>% 
+  filter(methods == "徒歩") %>% 
+  ggplot(aes(dis)) +
+  geom_histogram(binwidth = 1)
+```
+
