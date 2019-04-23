@@ -10,18 +10,8 @@
 
 Data Components
 
-+ 家賃
-+ 最寄駅
-+ 間取り・面積
-+ 築年数
-+ 階数
-+ 敷金
-+ 礼金
-
-
-できるだけたくさんデータ取ろう
-
-
-data
-
-maintain: 設備維持費用
++ price
++ key
++ date
++ maintainance
++ deposits

@@ -1,4 +1,4 @@
-rent = read.csv("Kyoto_rent.csv")
+rent = read.csv("data/Kyoto_rent.csv")
 rent = select(rent, -X)
 
 ## Title
@@ -68,7 +68,6 @@ names(rent)[9] = "admin"
 
 
 ## Details
-separate(rent, details, into = c("details", "floor"), sep = "階数・全部屋数\n\n") %>% View
 rent = separate(rent, details, into = c("details", "floor"), sep = "階数・全部屋数\n\n")
 rent = separate(rent, details, into = c("details", "direction"), sep = "\n向き\n")
 rent = separate(rent, details, into = c("details", "date"), sep = "\n完成年月\n")
@@ -157,9 +156,59 @@ rent$maintainance = rent$maintainance %>%
 
 
 
-
-
-
-
-
+## 2nd part
+rent = read.csv("/Users/KokiAndo/Desktop/R/R report/Kyoto Rent/data/cleaned_rent.csv")
+rent = select(rent, -X)
 View(rent)
+
+
+# deposits
+rent$deposits = as.character(rent$deposits)
+rent = rent %>% 
+  mutate(
+    deposits_real = case_when(
+      deposits == "1ヶ月分" ~ as.numeric(price)*1,
+      deposits == "1.5ヶ月分" ~ as.numeric(price)*1.5,
+      deposits == "2ヶ月分" ~ as.numeric(price)*2,
+      TRUE ~ as.numeric(deposits)*1.0
+      )
+    )
+rent = select(rent, -deposits)
+names(rent)[19] = "deposit"
+
+# Key
+rent$key = as.character(rent$key)
+rent = rent %>% 
+  mutate(
+    key_real = case_when(
+      key == "1ヶ月分" ~ as.numeric(price)*1,
+      key == "1.5ヶ月分" ~ as.numeric(price)*1.5,
+      key == "2ヶ月分" ~ as.numeric(price)*2,
+      TRUE ~ as.numeric(key)*1.0
+    )
+  )
+rent = select(rent, -key)
+names(rent)[19] = "key"
+
+# renewal
+rent$renewal = as.character(rent$renewal)
+rent = rent %>% 
+  mutate(
+    renewal_real = case_when(
+      renewal == "1ヶ月分" ~ as.numeric(price)*1,
+      renewal == "1.5ヶ月分" ~ as.numeric(price)*1.5,
+      renewal == "0.5ヶ月分" ~ as.numeric(price)*.5,
+      renewal == "2ヶ月分" ~ as.numeric(price)*2,
+      TRUE ~ as.numeric(renewal)*1.0
+    )
+  )
+rent = select(rent, -renewal)
+names(rent)[19] = "renewal"
+
+
+
+# View(rent)
+# write.csv(rent, "cleaned_rent.csv", row.names = FALSE)
+
+
+
