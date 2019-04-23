@@ -8,7 +8,7 @@
 
 + [今出川付近](https://unilife.co.jp/search/range/lat:35.03017044/lon:135.76075745/dis:1.5)
 
-Data
+Data Components
 
 + 家賃
 + 最寄駅
