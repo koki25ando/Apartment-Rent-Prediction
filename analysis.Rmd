@@ -9,6 +9,8 @@ output: html_document
 
 ```{r}
 library(tidyverse)
+library(corrplot)
+library(GGally)
 rent = read.csv("data/cleaned_rent.csv")
 ```
 
@@ -42,5 +44,49 @@ rent %>%
   filter(methods == "徒歩") %>% 
   ggplot(aes(dis)) +
   geom_histogram(binwidth = 1)
+```
+
+## Correlatinon Check
+
+```{r}
+cor_dat = select(rent, area, floor, price, admin, maintainance, dis, deposit, key, renewal)
+```
+
+```{r fig.width = 12, fig.heigt = 7, warning=FALSE, message=FALSE}
+ggpairs(cor_dat)
+```
+
+
+```{r}
+corrplot(cor(cor_dat), method="number")
+```
+
+
+
+```{r}
+ggcorplot(
+  data = select(rent, area, floor, price, admin, maintainance, dis, deposit, key, renewal),
+  var_text_size = 5,
+  cor_text_limits = c(5,10))
+```
+
+
+```{r}
+corrplot(
+  cor(select(rent, area, floor, price, admin, maintainance, dis, deposit, key, renewal)),
+  method="color",  
+  sig.level = 0.01, 
+  insig = "blank",
+  addCoef.col = "black", 
+  tl.srt=45, 
+  type="upper")
+```
+
+```{r}
+select(rent, area, floor, price, admin, maintainance, dis, deposit, key, renewal) %>% 
+  summary()
+```
+```{r}
+select(rent, area, floor, price, admin, maintainance, dis, deposit, key, renewal)
 ```
 
