@@ -7,17 +7,23 @@ output: html_document
 
 # Preparation
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 library(tidyverse)
 library(corrplot)
+library(treemap)
 library(GGally)
+library(rpart)
+library(rpart.plot)
 rent = read.csv("data/cleaned_rent.csv")
 ```
 
 ## Data Cleansing
 
 ```{r}
-
+rent = mutate(rent, year = substr(date, 0,4))
+rent$year = as.numeric(rent$year)
+rent = filter(rent, price <= 10)
+rent = filter(rent, year != 1900)
 ```
 
 
@@ -27,14 +33,46 @@ rent = read.csv("data/cleaned_rent.csv")
 str(rent)
 ```
 
+## Price Distribution
+
+```{r}
+rent %>% 
+  ggplot(aes(price)) +
+  geom_histogram(binwidth = .2)
+```
+
+
 ## Station
+
+```{r}
+rent = rent %>% 
+  separate(address, into = c("ward", "town"), sep = "区") %>% 
+  separate(ward, into = c("city", "ward"), sep = "市")
+
+```
 
 ```{r fig.width = 11, fig.height = 7}
 rent %>% 
-  ggplot(aes(station, fill = station)) +
-  geom_bar(show.legend = FALSE) +
+  ggplot(aes(station, fill = ward)) +
+  geom_bar() +
   theme_gray(base_family = "HiraKakuPro-W3") +
   coord_flip()
+```
+
+### Treemap
+
+```{r fig.width=12, fig.height=7}
+station_dat = rent %>% 
+  select(ward, station) %>% 
+  group_by(ward) %>%
+  count(station)
+station_dat$ward = paste0(station_dat$ward, "区")
+treemap(station_dat, index=c("ward","station"), vSize="n", 
+    type="index",                            # How you color the treemap. type help(treemap) for more info
+    palette = "Set1",                        # Select your color palette from the RColorBrewer presets or make your own.
+    title="My Treemap",                      # Customize your title
+    fontsize.title=12 # Size of the title
+)
 ```
 
 ## Distance
@@ -46,34 +84,31 @@ rent %>%
   geom_histogram(binwidth = 1)
 ```
 
+## Time Series
+
+```{r fig.width=10, fig.height=6}
+ts_dat = data.frame(table(rent$year)) %>% 
+  mutate(cum_sum = cumsum(Freq)) %>% 
+  select(-Freq)
+names(ts_dat) = c("year", "num")
+ts_dat$year = as.Date(ts_dat$year, format ="%Y")
+ts_dat %>% 
+  ggplot(aes(year, num)) +
+  geom_point(colour = "blue", alpha = .3) +
+  geom_line(colour = "blue")
+```
+
 ## Correlatinon Check
 
-```{r}
-cor_dat = select(rent, area, floor, price, admin, maintainance, dis, deposit, key, renewal)
-```
-
 ```{r fig.width = 12, fig.heigt = 7, warning=FALSE, message=FALSE}
-ggpairs(cor_dat)
-```
-
-
-```{r}
-corrplot(cor(cor_dat), method="number")
-```
-
-
-
-```{r}
-ggcorplot(
-  data = select(rent, area, floor, price, admin, maintainance, dis, deposit, key, renewal),
-  var_text_size = 5,
-  cor_text_limits = c(5,10))
+num_dat = select(rent, area, floor, price, admin, maintainance, dis, deposit, key, renewal, year)
+ggpairs(num_dat)
 ```
 
 
 ```{r}
 corrplot(
-  cor(select(rent, area, floor, price, admin, maintainance, dis, deposit, key, renewal)),
+  cor(num_dat),
   method="color",  
   sig.level = 0.01, 
   insig = "blank",
@@ -82,11 +117,28 @@ corrplot(
   type="upper")
 ```
 
-```{r}
-select(rent, area, floor, price, admin, maintainance, dis, deposit, key, renewal) %>% 
-  summary()
+```{r fig.width=12, fig.height=7, warning=FALSE}
+num_dat %>% 
+  gather(key = "type", value = "value", -price) %>% 
+  ggplot(aes(price, value)) +
+  geom_point() +
+  facet_wrap(~type, scale = "free") +
+  geom_smooth(method = "lm")
 ```
+
 ```{r}
-select(rent, area, floor, price, admin, maintainance, dis, deposit, key, renewal)
+price_model_lm = lm(price ~ ., data = num_dat)
+price_model_rpart = rpart(price ~ .,data = num_dat)
 ```
+
+```{r fig.width=12, fig.height=6}
+prp(price_model_rpart, type = 4, varlen = 0)
+```
+
+```{r}
+summary(price_model_rpart)
+```
+
+## Residuals
+
 
