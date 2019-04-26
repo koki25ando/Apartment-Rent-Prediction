@@ -20,6 +20,7 @@ rent = read.csv("data/cleaned_rent.csv")
 ## Data Cleansing
 
 ```{r}
+names(rent)[14] = "maintenance"
 rent = mutate(rent, year = substr(date, 0,4))
 rent$year = as.numeric(rent$year)
 rent = filter(rent, price <= 10)
@@ -101,7 +102,7 @@ ts_dat %>%
 ## Correlatinon Check
 
 ```{r fig.width = 12, fig.heigt = 7, warning=FALSE, message=FALSE}
-num_dat = select(rent, area, floor, price, admin, maintainance, dis, deposit, key, renewal, year)
+num_dat = select(rent, area, floor, price, admin, maintenance, dis, deposit, key, renewal, year)
 ggpairs(num_dat)
 ```
 
@@ -126,6 +127,10 @@ num_dat %>%
   geom_smooth(method = "lm")
 ```
 
+## Model Comparison
+
+lm, rpart, random forest
+
 ```{r}
 price_model_lm = lm(price ~ ., data = num_dat)
 price_model_rpart = rpart(price ~ .,data = num_dat)
@@ -134,6 +139,36 @@ price_model_rpart = rpart(price ~ .,data = num_dat)
 ```{r fig.width=12, fig.height=6}
 prp(price_model_rpart, type = 4, varlen = 0)
 ```
+
+## Predicting
+
+
+```{r fig.width=12, fig.height=7}
+num_dat$prediction = predict(price_model_rpart)
+num_dat =  mutate(num_dat, residuals = price-prediction)
+num_dat %>% 
+  ggplot(aes(price, prediction)) +
+  geom_point() +
+  geom_abline(colour = "blue") +
+  labs(title = "Price vs Recursive Partitioning Model")
+```
+
+
+```{r}
+num_dat %>% 
+  ggplot(aes(prediction, residuals)) +
+  geom_pointrange(aes(ymin = 0, ymax = residuals), size = .1) + 
+    geom_hline(yintercept = 0, linetype = 3)
+```
+
+```{r}
+library(WVPlots)
+GainCurvePlot(num_dat, "prediction", "price", "Apartment Rent Model")
+```
+
+
+Add MSE MAE, RMSE
+
 
 ```{r}
 summary(price_model_rpart)

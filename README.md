@@ -10,11 +10,26 @@
 
 Data Components
 
-+ price
-+ key
-+ date
-+ maintainance
-+ deposits
++ title: 物件名
++ zip_code: 郵便番号
++ address: 住所
++ station_type: 最寄駅のタイプ
++ station: 最寄駅
++ area: 面積
++ contract: 契約年数
++ date: 建設年月
++ direction: 部屋の向き
++ floor: 建物の階数
++ points: 不動産の推しポイント
++ price: 家賃
++ admin: 共益費、管理費
++ maintenance: 維持費
++ methods: 最寄駅までの手段
++ dis: 最寄駅までの時間
++ deposit: 敷金
++ key: 礼金
++ renewal: 更新料
++ year: 建設年
 
 
 分析参考文献
