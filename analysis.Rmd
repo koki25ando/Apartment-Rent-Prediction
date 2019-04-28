@@ -132,6 +132,7 @@ num_dat %>%
 lm, rpart, random forest
 
 ```{r}
+getwd()
 price_model_lm = lm(price ~ ., data = num_dat)
 price_model_rpart = rpart(price ~ .,data = num_dat)
 ```
