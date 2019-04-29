@@ -15,6 +15,7 @@ library(GGally)
 library(rpart)
 library(rpart.plot)
 rent = read.csv("data/cleaned_rent.csv")
+getwd()
 ```
 
 ## Data Cleansing
@@ -101,15 +102,15 @@ ts_dat %>%
 
 ## Correlatinon Check
 
-```{r fig.width = 12, fig.heigt = 7, warning=FALSE, message=FALSE}
-num_dat = select(rent, area, floor, price, admin, maintenance, dis, deposit, key, renewal, year)
+```{r fig.width = 12, fig.heigt = 9, warning=FALSE, message=FALSE}
+num_dat = select(rent, title, area, floor, price, admin, maintenance, dis, deposit, key, renewal, year)
 ggpairs(num_dat)
 ```
 
 
 ```{r}
 corrplot(
-  cor(num_dat),
+  cor(select(num_dat, -title)),
   method="color",  
   sig.level = 0.01, 
   insig = "blank",
@@ -119,7 +120,7 @@ corrplot(
 ```
 
 ```{r fig.width=12, fig.height=7, warning=FALSE}
-num_dat %>% 
+select(num_dat, -title) %>% 
   gather(key = "type", value = "value", -price) %>% 
   ggplot(aes(price, value)) +
   geom_point() +
@@ -134,7 +135,7 @@ lm, rpart, random forest
 ```{r}
 getwd()
 price_model_lm = lm(price ~ ., data = num_dat)
-price_model_rpart = rpart(price ~ .,data = num_dat)
+price_model_rpart = rpart(price ~ .,data = select(num_dat, -title))
 ```
 
 ```{r fig.width=12, fig.height=6}
@@ -166,6 +167,16 @@ num_dat %>%
 library(WVPlots)
 GainCurvePlot(num_dat, "prediction", "price", "Apartment Rent Model")
 ```
+
+```{r}
+num_dat %>% 
+  arrange(residuals) %>% 
+  tail(5)
+num_dat %>% 
+  arrange(residuals) %>% 
+  head(5)
+```
+
 
 
 Add MSE MAE, RMSE
